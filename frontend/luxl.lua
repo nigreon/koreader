@@ -65,12 +65,13 @@ local ST_ERROR=14;              -- error state
 local CCLASS_NONE = 0;         -- matches nothing; a base state
 local CCLASS_LEFT_ANGLE=1;     -- matches start tag '<'
 local CCLASS_SLASH=2;          -- matches forward slash
-local CCLASS_RIGHT_ANGLE=3;    -- matches end tag '>'
-local CCLASS_EQUALS=4;         -- matches equals sign
-local CCLASS_QUOTE=5;          -- matches double-quotes
-local CCLASS_LETTERS=6;        -- matches a-zA-Z letters and digits 0-9
-local CCLASS_SPACE=7;          -- matches whitespace
-local CCLASS_ANY=8;            -- matches any ASCII character; will match all above classes
+local CCLASS_QUESTION=3;       -- matches question mark
+local CCLASS_RIGHT_ANGLE=4;    -- matches end tag '>'
+local CCLASS_EQUALS=5;         -- matches equals sign
+local CCLASS_QUOTE=6;          -- matches double-quotes
+local CCLASS_LETTERS=7;        -- matches a-zA-Z letters and digits 0-9
+local CCLASS_SPACE=8;          -- matches whitespace
+local CCLASS_ANY=9;            -- matches any ASCII character; will match all above classes
 
 -- Types of events: start element, end element, text, attr name, attr
 -- val and start/end document. Other events can be ignored!
@@ -185,6 +186,7 @@ local LEXER_STATES = {
   { state = ST_ATTR_VAL2,     cclass = CCLASS_QUOTE,        next_state = ST_START_TAGNAME_END, event = EVENT_ATTR_VAL },
   { state = ST_ATTR_VAL2,     cclass = CCLASS_LETTERS,      next_state = ST_ATTR_VAL2,         event = EVENT_MARK },
   { state = ST_ATTR_VAL2,     cclass = CCLASS_SLASH,        next_state = ST_ATTR_VAL2,         event = EVENT_MARK },
+  { state = ST_ATTR_VAL2,     cclass = CCLASS_QUESTION,     next_state = ST_ATTR_VAL2,         event = EVENT_MARK },
 
   -- [38] End of table marker
   { state = ST_ERROR,         cclass = CCLASS_NONE,         next_state = ST_ERROR,             event = EVENT_NONE }
@@ -204,6 +206,7 @@ local cclass_match = {
     [CCLASS_LETTERS] = "(ctype == 1 or ctype == 2)",
     [CCLASS_LEFT_ANGLE] = "(c == T_LT)",
     [CCLASS_SLASH] = "(c == T_SLASH)",
+    [CCLASS_QUESTION] = "(c == T_QUESTION)",
     [CCLASS_RIGHT_ANGLE] = "(c == T_GT)",
     [CCLASS_EQUALS] = "(c == T_EQ)",
     [CCLASS_QUOTE] = "(c == T_QUOTE)",
@@ -242,6 +245,7 @@ local STATES, next_char, char_type = ...
 
 local T_LT = string.byte('<')
 local T_SLASH = string.byte('/')
+local T_QUESTION = string.byte('?')
 local T_GT = string.byte('>')
 local T_EQ = string.byte('=')
 local T_QUOTE = string.byte('"')
